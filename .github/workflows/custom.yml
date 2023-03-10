@@ -39,11 +39,6 @@ jobs:
             ----
           emoji: heart
 
-      - name: Set up Ruby 3
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.1.2
-
       - name: Set up Python 3
         uses: actions/setup-python@v4
         with:
@@ -202,9 +197,9 @@ jobs:
                   curAddons = [ x.strip() for x in re.split(',| |\|', addons) if x.strip() != '' ]
                   curAddons = list(set(curAddons))
                   if iscustom == 'true' and addons != '':
-                  for cur in curAddons:
-                    cur = '--with ' + cur + ' '
-                    addons.append(cur)
+                    for cur in curAddons:
+                      cur = '--with ' + cur + ' '
+                      addons.append(cur)
 
               set_output('issues', issues)
               set_output('iscustom', iscustom)
