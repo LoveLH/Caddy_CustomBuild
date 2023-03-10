@@ -325,7 +325,7 @@ jobs:
 
           # 编译
           echo "==============================编译=============================="
-          xcaddy build  ${{ env.addons }}
+          xcaddy build ${{ env.version }} ${{ env.addons }}
 
       - name: Generate release tag
         if: env.iscustom == 'true' && success()
