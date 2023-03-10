@@ -74,13 +74,11 @@ jobs:
             // \u2028    行分隔符
             // \u2029    段落分隔符
             // \uFEFF    字节顺序标记
-            
             var fs = require('fs'); // 引入fs模块
             var issuenumber = ${{ toJSON(github.event.issue.number) }};
             var issueauth = ${{ toJSON(github.event.issue.user.login) }};
             var issuetitle = ${{ toJSON(github.event.issue.title) }};
             var issuebody = ${{ toJSON(github.event.issue.body) }};
-
             if (issuetitle != null) {
               issuetitle = issuetitle.replace(/\u000A|\u000D/g, "");  // 换行符,回车
             }
@@ -88,7 +86,7 @@ jobs:
             if (issuebody != null) {
               // Backspace,Tab,垂直制表符,换页,回车,不间断空格,行分隔符,段落分隔符,字节顺序标记
               issuebody = issuebody.replace(/\u0008|\u0009|\u000B|\u000C|\u000D|\u00A0|\u2028|\u2029|\uFEFF/g, "");
-            
+              
               // 容错
               issuebody = issuebody.replace(/：/g, ": ");
               issuebody = issuebody.replace(/，/g, ", ");
