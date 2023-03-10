@@ -358,7 +358,7 @@ jobs:
         if: env.iscustom == 'true' && success()
         uses: actions/upload-artifact@v3
         with:
-          name: Caddy-${{ env.GOOS }}-${{ env.version }}-${{ env.release_tag }}
+          name: Caddy-${{ env.GOOS }}-${{ env.GOARCH }}-${{ env.version }}-${{ env.release_tag }}
           path: |
             caddy
 
