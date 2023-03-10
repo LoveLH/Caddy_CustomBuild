@@ -36,9 +36,8 @@ addons           | ×    |-               | 请输入需要集成的插件, 多�
 3. 再次构建, 直接 reopen 会再次触发构建. 
 4. 每日构建, 打上'schedule'标签 将会每日构建(通过Reopen的方式, 因此如果构建失败Issues没有Closed 将终止).     
 5. 根据github官方说明所有的编译结果保留90天，周知.
-6. 如果没有魔法, 参考 https://github.com/wjz304/hosts 设置 hosts.
-7. 在Issues下评论 "transfer" 附件转快传 🚲->🏍. (请勿重复发, 转换操作时间 ≈ 该Issue编译成功次数 X 3分钟).
-8. 在Issues下评论 "delete builds" 即可删该Issues的所有历史编译记录.
+6. 在Issues下评论 "transfer" 附件转快传 🚲->🏍. (请勿重复发, 转换操作时间 ≈ 该Issue编译成功次数 X 3分钟).
+7. 在Issues下评论 "delete builds" 即可删该Issues的所有历史编译记录.
 
 ## 举例
 * 示例: 
