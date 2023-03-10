@@ -54,6 +54,9 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           sudo timedatectl set-timezone "Asia/Shanghai"
+          
+          python -m pip install --upgrade pip setuptools
+          python -m pip install requests
 
           go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
 
@@ -138,7 +141,7 @@ jobs:
         shell: python
         run: |
           # -*- coding: utf-8 -*-
-          import json, re, subprocess
+          import json, re, subprocess, requests
 
           def set_output(name, value):
               subprocess.call(["echo '{}={}' >> $GITHUB_ENV".format(name, value)], shell=True)
@@ -186,7 +189,13 @@ jobs:
               except Exception as e:
                   iscustom = 'false'
                   errinfo = 'body 错误, 不符合JSON规范 {}.'.format(e)
-
+                  
+              if GOOS = '':
+                GOOS = 'linux'
+              if GOARCH = '':
+                GOARCH = 'amd64'
+              if version = '':
+                version = json.loads(requests.get('https://api.github.com/repos/caddyserver/caddy/releases/latest').text)['tag_name']
 
               if iscustom == 'true' and addons != '':
                   curAddons = [ x.strip() for x in re.split(',| |\|', addons) if x.strip() != '' ]
