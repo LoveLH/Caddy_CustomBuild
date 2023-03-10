@@ -138,7 +138,7 @@ jobs:
         shell: python
         run: |
           # -*- coding: utf-8 -*-
-          import json, re
+          import json, re, subprocess
 
           def set_output(name, value):
               subprocess.call(["echo '{}={}' >> $GITHUB_ENV".format(name, value)], shell=True)
