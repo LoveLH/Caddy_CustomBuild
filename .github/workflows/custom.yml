@@ -199,7 +199,7 @@ jobs:
                   if iscustom == 'true' and addons != '':
                     for cur in curAddons:
                       cur = '--with ' + cur + ' '
-                      addons.append(cur)
+                      addons = addons + cur
 
               set_output('issues', issues)
               set_output('iscustom', iscustom)
