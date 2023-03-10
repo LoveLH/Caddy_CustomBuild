@@ -190,11 +190,11 @@ jobs:
                   iscustom = 'false'
                   errinfo = 'body 错误, 不符合JSON规范 {}.'.format(e)
                   
-              if GOOS = '':
+              if GOOS == '':
                 GOOS = 'linux'
-              if GOARCH = '':
+              if GOARCH == '':
                 GOARCH = 'amd64'
-              if version = '':
+              if version == '':
                 version = json.loads(requests.get('https://api.github.com/repos/caddyserver/caddy/releases/latest').text)['tag_name']
 
               if iscustom == 'true' and addons != '':
