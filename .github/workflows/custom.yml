@@ -1,0 +1,129 @@
+name: Custom Caddy
+on:
+  issues:
+    types: [opened, reopened]
+  workflow_dispatch:
+    inputs:
+      body: 
+        description: 'issuss body'
+        required: true
+        default: ''
+        type: string
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+          
+      - name: Create Issues comment
+        if: github.event_name == 'issues'
+        id: comment
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'create-comment'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.issue.number }}
+          body: | 
+            分析 title 和 body 内容 ..  
+            > ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}  
+            ----
+          emoji: heart
+            
+      - name: Set up Ruby 3
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.2
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Setup Go environment
+        uses: actions/setup-go@v3.5.0
+        with:
+          go-version: '1.20.2'
+      - name: Init Env
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          sudo timedatectl set-timezone "Asia/Shanghai"
+          
+          python -m pip install --upgrade pip setuptools
+          python -m pip install requests
+          
+          go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
+      - name: Get Issues Info
+        if: github.event_name == 'issues'
+        id: get-issues
+        uses: actions/github-script@v6
+        with:
+          script: |
+          // '<???>': 替换一次; '/<???>/g': 替换全局; '/<???>/gi': 替换全局并忽略大小写; 
+          // \u0008 \b Backspace
+          // \u0009 \t Tab
+          // \u000A \n 换行符
+          // \u000B \v 垂直制表符
+          // \u000C \f 换页
+          // \u000D \r 回车
+          // \u0022 \" 双引号 (")
+          // \u0027 \' 单引号 (')
+          // \u005C \\ 反斜杠 (\)
+          // \u00A0    不间断空格
+          // \u2028    行分隔符
+          // \u2029    段落分隔符
+          // \uFEFF    字节顺序标记
+          
+          var fs = require('fs'); // 引入fs模块
+          var issuenumber = ${{ toJSON(github.event.issue.number) }};
+          var issueauth = ${{ toJSON(github.event.issue.user.login) }};
+          var issuetitle = ${{ toJSON(github.event.issue.title) }};
+          var issuebody = ${{ toJSON(github.event.issue.body) }};
+
+          if (issuetitle != null) {
+            issuetitle = issuetitle.replace(/\u000A|\u000D/g, "");  // 换行符,回车
+          }
+          
+          if (issuebody != null) {
+            // Backspace,Tab,垂直制表符,换页,回车,不间断空格,行分隔符,段落分隔符,字节顺序标记
+            issuebody = issuebody.replace(/\u0008|\u0009|\u000B|\u000C|\u000D|\u00A0|\u2028|\u2029|\uFEFF/g, "");
+          
+            // 容错
+            issuebody = issuebody.replace(/：/g, ": ");
+            issuebody = issuebody.replace(/，/g, ", ");
+            issuebody = issuebody.replace(/“|”/g, "\"");
+            fs.writeFileSync(`body#${issuenumber}.txt`, issuebody, { 'flag': 'w' }, (err) => { if (err) throw err; });
+          
+            var regex = /\`\`\`([\s\S]*?)\`\`\`/g;
+            let options = issuebody.match(regex);
+            if (options != null && options.length > 0) {
+              fs.writeFileSync('customshell.sh', options[options.length-1].replace(/\`/g, ""), { 'flag': 'w' }, (err) => { if (err) throw err; });
+              for(option in options) {
+                console.log(options[option]);
+                issuebody = issuebody.replace(options[option], "");
+              }
+            }
+            // 换行符
+            issuebody = issuebody.replace(/\u000A/g, "");
+          }
+          core.setOutput("issuenumber", JSON.stringify(issuenumber));
+          core.setOutput("issueauth", JSON.stringify(issueauth));
+          core.setOutput("issuetitle", JSON.stringify(issuetitle));
+          core.setOutput("issuebody", JSON.stringify(issuebody));
+
+      - name: Set Issues Info
+        if: github.event_name == 'issues' && success()
+        run: |
+          echo issuenumber: '${{ steps.get-issues.outputs.issuenumber }}'
+          echo issueauth:   '${{ steps.get-issues.outputs.issueauth }}'
+          echo issuetitle:  '${{ steps.get-issues.outputs.issuetitle }}'
+          echo issuebody:   '${{ steps.get-issues.outputs.issuebody }}'
+          echo "issuenumber="${{ steps.get-issues.outputs.issuenumber }}"" >> $GITHUB_ENV
+          echo "issueauth="${{ steps.get-issues.outputs.issueauth }}"" >> $GITHUB_ENV
+          echo "issuetitle="${{ steps.get-issues.outputs.issuetitle }}"" >> $GITHUB_ENV
+          echo "issuebody="${{ steps.get-issues.outputs.issuebody }}"" >> $GITHUB_ENV
+          if [ -f 'customshell.sh' ]; then
+            echo "customshell.sh"
+            cat customshell.sh
+          fi
