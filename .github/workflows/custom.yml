@@ -55,9 +55,6 @@ jobs:
           git config --global user.name "github-actions[bot]"
           sudo timedatectl set-timezone "Asia/Shanghai"
 
-          python -m pip install --upgrade pip setuptools
-          python -m pip install requests
-
           go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
 
       - name: Get Issues Info
@@ -141,7 +138,7 @@ jobs:
         shell: python
         run: |
           # -*- coding: utf-8 -*-
-          import os, re, json, shutil, string, requests, subprocess
+          import json, re
 
           def set_output(name, value):
               subprocess.call(["echo '{}={}' >> $GITHUB_ENV".format(name, value)], shell=True)
@@ -160,8 +157,6 @@ jobs:
 
               addons = ''
 
-
-
               try:
                   body = {}
                   bodyOriginal = {}
@@ -175,7 +170,7 @@ jobs:
                       bodyOriginal = json.loads('${{ inputs.body }}')
 
                   for k, v in bodyOriginal.items():
-                    body[k.lower()] = v
+                    body[k] = v
 
                   if len(body) == 0:
                       iscustom = 'false'
