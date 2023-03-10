@@ -197,6 +197,7 @@ jobs:
                   curAddons = [ x.strip() for x in re.split(',| |\|', addons) if x.strip() != '' ]
                   curAddons = list(set(curAddons))
                   if iscustom == 'true' and addons != '':
+                    addons = ''
                     for cur in curAddons:
                       cur = '--with ' + cur + ' '
                       addons = addons + cur
