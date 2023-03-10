@@ -194,6 +194,9 @@ jobs:
                 GOOS = 'linux'
               if GOARCH == '':
                 GOARCH = 'amd64'
+              if 'arm' in GOARCH:
+                if GOARM == '':
+                  errinfo = '使用arm指令集需要指定arm架构版本。'
               if version == '':
                 version = json.loads(requests.get('https://api.github.com/repos/caddyserver/caddy/releases/latest').text)['tag_name']
 
